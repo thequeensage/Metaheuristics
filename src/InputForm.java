@@ -1,16 +1,13 @@
 import javax.swing.*;
-import java.awt.*;
-import java.awt.image.ImageObserver;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.text.AttributedCharacterIterator;
 
 public class InputForm extends JFrame{
     //<editor-fold desc="TextFields">
     private JTextField lowerBoundField;
     private JTextField upperBoundField;
     private JTextField packNumberField;
-    private JTextField searchAgents_field;
-    private JTextField maxIterField;
     private JTextField minShuffleField;
     private JTextField maxShuffleField;
     private JTextField maxLengthField;
@@ -23,13 +20,15 @@ public class InputForm extends JFrame{
     //</editor-fold>
     private JButton[] buttons = {submitButton, clearButton};
     private int[] inputs;
-    private JTextField[] fields = {maxLengthField, trialLimitField, maxEpochField, lowerBoundField, upperBoundField, packNumberField, searchAgents_field, maxIterField, minShuffleField, maxShuffleField};
+    // Todo: NOTE: DELETED EVERYTHING EXCEPT MAIN 3 PARAMETERS
+    private JTextField[] fields = {maxLengthField, trialLimitField, maxEpochField, minShuffleField, maxShuffleField};
     public InputForm(){
         this.setTitle("Initialize Parameters");
         this.setContentPane(mainPanel);
         this.pack();
         this.setLocationRelativeTo(null);
-        this.setIconImage(new ImageIcon("wolf.jpg").getImage());
+        URL myString = InputForm.class.getResource("resources/wolf2.png");
+        this.setIconImage(new ImageIcon(myString).getImage());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.clearButton.setContentAreaFilled(false);
         this.submitButton.setContentAreaFilled(false);
@@ -43,17 +42,28 @@ public class InputForm extends JFrame{
             }
         });
         submitButton.addActionListener(e -> {
-            submitButton.setText("Calculating...");
-            int i=0;
-            for (JTextField F: fields){
-                inputs[i] = Integer.parseInt(F.getText());
-                i++;
+            if(Integer.parseInt(maxLengthField.getText()) < 4) {
+                JOptionPane.showMessageDialog(null, "No Solution below Size 4! Please enter valid size");
             }
-            OutputForm Output = new OutputForm(inputs);
-            Output.setVisible(true);
-            this.dispose();
+            else {
+                submitButton.setText("Calculating...");
+                int i = 0;
+                for (JTextField F : fields) {
+                    inputs[i] = Integer.parseInt(F.getText());
+                    i++;
+                }
+                OutputForm Output = new OutputForm(inputs);
+                Output.setVisible(true);
+                dispose();
+            }
         });
-
+        submitButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                submitButton.setText("Calculating...");
+            }
+        });
     }
 
     public static void main(String[] args) {

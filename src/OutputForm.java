@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -107,26 +108,47 @@ public class OutputForm extends JFrame {
     private BufferedImage image;
     private JButton[] buttons = {nextBoardButton, nextRunButton, previousBoardButton, previousRunButton};
     //</editor-fold>
+
+    private URL getThisResource(String str){
+        return OutputForm.class.getResource("resources/" + str);
+    }
     public OutputForm(int[] inputs){
-//        private JTextField[] fields = {maxLengthField, trialLimitField, maxEpochField, lowerBoundField, upperBoundField, packNumberField, searchAgents_field, maxIterField, minShuffleField, maxShuffleField};
         this.setTitle("N-Queens Solution Using Swarm Intelligence: Grey Wolf Optimization Algorithm");
         this.setContentPane(mainPanel);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setIconImage(new ImageIcon("src/resources/wolf1.png").getImage());
+        this.setIconImage(new ImageIcon(getThisResource("wolf1.png")).getImage());
         this.setUndecorated(true);
         solutions = new ArrayList<>();
         solver = new SolverGWO();
         restart_board();
-        solver.test(inputs[0], inputs[1], inputs[2]);
+        solver.test(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4]);
         String filepath = "GWO-N" + inputs[0] + "-" + inputs[1] + "-" + inputs[2] + ".txt";
         CW = new ComponentWriter(filepath);
         CW.parseFile();
         boardIndex = 0;
         runIndex = 0;
-        display(runIndex);
-        constructBoard(runIndex);
+        if(solver.MAX_LENGTH > 8){
+            String[] button_str = {"See First Raw Output", "Go to Input Form", "Close"};
+            int returnvalue = JOptionPane.showOptionDialog(null, "Board size too big! Check " +
+                                                            filepath + " or input with less than 9.", "Choose Option...",
+                                                            JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                                                            button_str, button_str[0]);
+            if(returnvalue == 0){{
+                String first = CW.getSolutions(0).get(0);
+                JOptionPane.showMessageDialog(null, first);
+            }
+            }else if(returnvalue == 1){
+                InputForm I = new InputForm();
+                I.setVisible(true);
+                dispose();
+            }
+        }
+        else {
+            display(runIndex);
+            constructBoard(runIndex);
+        }
         for(JButton i: buttons){
             i.setBackground(new Color(152,183,222));
             i.setBorder(null);
@@ -182,12 +204,20 @@ public class OutputForm extends JFrame {
         for (int i = 0; i < grid_labels.length; i++) {
             for (int j = 0; j < grid_labels.length; j++) {
                 if( (i+j) % 2 == 0){
-                    grid_labels[i][j].setIcon(new ImageIcon("src/resources/board1.png"));
+                    grid_labels[i][j].setIcon(new ImageIcon(getThisResource("board1.png")));
                 }
                 else{
-                    grid_labels[i][j].setIcon(new ImageIcon("src/resources/board2.png"));
+                    grid_labels[i][j].setIcon(new ImageIcon(getThisResource("board2.png")));
                 }
                 grid_labels[i][j].setText("_");
+            }
+        }
+    }
+    public void disable_some_board(int size){
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if(i > size || j > size)
+                    grid_labels[i][j].setIcon(new ImageIcon(getThisResource("boardx.png")));
             }
         }
     }
@@ -197,8 +227,6 @@ public class OutputForm extends JFrame {
         epochLabel.setText("Found at Epoch: " + CW.getEpochID(index) + "");
         solutions = CW.getSolutions(index);
         boardsCntLabel.setText("Number of Correct Solutions: " + solutions.size());
-
-
     }
 
 
@@ -236,20 +264,15 @@ public class OutputForm extends JFrame {
                 else{
                     grid_labels[i][j].setText("");
                     grid_labels[i][j].setBackground(Color.GREEN);
-                    grid_labels[i][j].setIcon(new ImageIcon("src/resources/wolf" + getRandomNumber(1,3) +"_colored.png"));
+                    grid_labels[i][j].setIcon(new ImageIcon(getThisResource("wolf" + getRandomNumber(1,3) +"_colored.png")));
 
                 }
             }
         }
+        disable_some_board(board_chr.length-1);
     }
     public int getRandomNumber(int low, int high) {
         Random R = new Random();
         return (int)Math.round((high - low) * R.nextDouble() + low);
     }
-    /*
-    public static void main(String[] args) {
-        int[] data_test = {4,4,1000,-100,100,30,5,1000,8,20};
-        OutputForm O = new OutputForm(data_test);
-        O.setVisible(true);
-    }*/
 }

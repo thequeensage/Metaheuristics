@@ -28,6 +28,7 @@ public class Wolf {
      *
      */
     public void computeConflicts() { //compute the number of conflicts to calculate fitness
+        // TODO: THIS IS THE FITNESS FUNCTION
         String board[][] = new String[MAX_LENGTH][MAX_LENGTH]; //initialize board
         int x = 0; //row
         int y = 0; //column
@@ -95,6 +96,14 @@ public class Wolf {
         }
         return board;
     }
+    /* sets fitness */
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
+    }
+
+    public double getFitness() {
+        return fitness;
+    }
 
     /* Initializes the wolves into diagonal queens */
     public void initPos(){
@@ -111,6 +120,8 @@ public class Wolf {
     public int getPos(int index) {
         return pos[index];
     }
+
+    public int[] getPos(){return  pos;}
 
     /* Sets the data on a specified index.
      *

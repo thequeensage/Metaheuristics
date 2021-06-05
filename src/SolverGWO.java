@@ -22,9 +22,9 @@ public class SolverGWO {
      * @param: trial limit for ABC
      * @param: max epoch for ABC
      */
-    public void test(int maxLength, int trialLimit, int maxEpoch) {
+    public void test(int maxLength, int trialLimit, int maxEpoch, int minShuffles, int maxShuffles) {
         MAX_LENGTH = maxLength;
-        gwo = new GrayWolfOptimization(MAX_LENGTH);
+        gwo = new GrayWolfOptimization(MAX_LENGTH, trialLimit, maxEpoch, minShuffles, maxShuffles);
         long testStart = System.nanoTime();
         String filepath = "GWO-N" + MAX_LENGTH + "-" + trialLimit + "-" + maxEpoch + ".txt";
         long startTime = 0;
@@ -59,7 +59,6 @@ public class SolverGWO {
                 logWriter.add("___________________________________________");
             } else {                                                                //count failures for failing criteria
                 fail++;
-                System.out.println("Fail!");
             }
 
             if(fail >= 100) {
